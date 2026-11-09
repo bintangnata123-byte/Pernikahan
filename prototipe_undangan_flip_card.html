@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Pernikahan Digital - Flip Card Prototype</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for organic handwritten & minimalist Japanese postcard look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Klee+One:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-room: #efece6;
+            --card-paper: #fdfcf9;
+            --ink-black: #1e1d1b;
+            --ink-muted: #6e6a63;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-room);
+            background-image: 
+                radial-gradient(at 20% 20%, rgba(255, 255, 255, 0.6) 0px, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(215, 208, 195, 0.35) 0px, transparent 50%);
+            font-family: 'Klee One', sans-serif;
+            color: var(--ink-black);
+            overflow-x: hidden;
+        }
+
+        .font-hand {
+            font-family: 'Caveat', cursive;
+        }
+
+        .font-klee {
+            font-family: 'Klee One', cursive, serif;
+        }
+
+        .font-sans-clean {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* 3D Flip Card Container & Mechanics */
+        .scene {
+            perspective: 1600px;
+            width: 100%;
+            max-width: 390px;
+            aspect-ratio: 3 / 4.25;
+            position: relative;
+        }
+
+        .postcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.85s cubic-bezier(0.34, 1.35, 0.64, 1), box-shadow 0.4s ease;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        /* Subtle hover lift on desktop */
+        @media (hover: hover) {
+            .postcard:not(.is-flipped):hover {
+                transform: translateY(-4px) rotateY(4deg);
+            }
+            .postcard.is-flipped:hover {
+                transform: rotateY(180deg) translateY(-4px) rotateY(-4deg);
+            }
+        }
+
+        .postcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            background-color: var(--card-paper);
+            border-radius: 6px;
+            box-shadow: 
+                0 20px 45px -15px rgba(30, 29, 27, 0.14),
+                0 4px 12px -2px rgba(30, 29, 27, 0.06),
+                inset 0 0 0 1px rgba(30, 29, 27, 0.06);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem 1.75rem;
+        }
+
+        /* Subtle paper grain overlay */
+        .card-face::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.35;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Hand-drawn organic button style */
+        .doodle-btn {
+            border: 1.6px solid var(--ink-black);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            transition: all 0.2s ease;
+            background-color: transparent;
+        }
+
+        .doodle-btn:hover {
+            background-color: var(--ink-black);
+            color: var(--card-paper);
+            transform: scale(1.02);
+        }
+
+        .doodle-btn:active {
+            transform: scale(0.98);
+        }
+
+        .doodle-btn-filled {
+            border: 1.6px solid var(--ink-black);
+            border-radius: 15px 225px 15px 255px/255px 15px 225px 15px;
+            background-color: var(--ink-black);
+            color: var(--card-paper);
+            transition: all 0.2s ease;
+        }
+
+        .doodle-btn-filled:hover {
+            background-color: #363430;
+            transform: scale(1.02);
+        }
+
+        /* Gentle floating pulse for hint */
+        @keyframes softPulse {
+            0%, 100% { transform: translateY(0); opacity: 0.75; }
+            50% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        .hint-badge {
+            animation: softPulse 2.8s infinite ease-in-out;
+        }
+
+        /* SVG stroke styling to mimic marker/ink pen */
+        .ink-stroke {
+            stroke: var(--ink-black);
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .ink-fill {
+            fill: var(--ink-black);
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 relative">
+
+    <!-- Top Floating Bar: Controls for testing the prototype -->
+    <header class="fixed top-4 inset-x-4 max-w-md mx-auto flex items-center justify-between z-20 pointer-events-none">
+        <div class="bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-stone-200/80 flex items-center gap-2 pointer-events-auto">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span class="font-sans-clean text-xs font-medium text-stone-700" id="pageIndicator">Sisi Depan (1/2)</span>
+        </div>
+
+        <button id="openCustomizeBtn" class="bg-white/80 hover:bg-white backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-sm border border-stone-200/80 font-sans-clean text-xs font-medium text-stone-700 flex items-center gap-1.5 transition pointer-events-auto active:scale-95">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            Edit Teks
+        </button>
+    </header>
+
+    <!-- Main 3D Card Scene -->
+    <main class="w-full flex flex-col items-center justify-center my-auto py-8">
+        <div class="scene" id="cardScene" title="Klik untuk membalik undangan">
+            <div class="postcard" id="postcard">
+
+                <!-- ==========================================
+                     HALAMAN 1: SISI DEPAN (GAMBAR REFERENSI)
+                     ========================================== -->
+                <section class="card-face card-front select-none" aria-label="Halaman Depan Undangan">
+                    
+                    <!-- Top Garland Doodle SVG -->
+                    <div class="w-full flex flex-col items-center pt-1">
+                        <svg class="w-4/5 max-w-[260px] h-auto overflow-visible" viewBox="0 0 260 48">
+                            <!-- Tiny spark lines above heart -->
+                            <path class="ink-stroke" stroke-width="1.8" d="M124 8 L122 3 M130 7 L130 2 M136 8 L138 3" />
+                            <!-- Center tiny heart loop & garland waves -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 12,42 C 42,40 66,26 75,18 C 78,15 74,10 71,13 C 68,16 72,23 82,25 C 98,28 118,24 128,16 C 125,10 130,8 130,12 C 130,8 135,10 132,16 C 142,24 162,28 178,25 C 188,23 192,16 189,13 C 186,10 182,15 185,18 C 194,26 218,40 248,42" />
+                            <!-- Decorative tiny hollow circles -->
+                            <circle class="ink-stroke" stroke-width="1.8" cx="42" cy="27" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="103" cy="17" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="157" cy="17" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="218" cy="27" r="2.2" />
+                        </svg>
+
+                        <!-- Main Greeting Header -->
+                        <div class="mt-2 text-center leading-none">
+                            <h1 id="displayHeader" class="font-hand text-4xl sm:text-[42px] tracking-wide text-[#1e1d1b] whitespace-pre-line leading-[0.95]">Just
+married</h1>
+                        </div>
+                    </div>
+
+                    <!-- Center Couple Doodle Illustration (Matching New Photo-Frame Couple Reference) -->
+                    <div class="w-full flex items-center justify-center my-0.5 relative">
+                        <!-- Custom Uploaded Image Preview (Hidden by default unless user uploads their own file) -->
+                        <img id="customAvatarImg" src="" alt="Ilustrasi Pasangan" class="hidden w-full max-w-[270px] max-h-[195px] object-contain mix-blend-multiply pointer-events-none select-none" />
+
+                        <!-- Hand-drawn SVG Illustration matching the Couple with Picture Frame reference -->
+                        <svg id="defaultAvatarSvg" class="w-full max-w-[285px] h-auto overflow-visible" viewBox="0 0 310 215">
+                            <!-- ================= LOWER BODIES & VEIL (BEHIND FRAME) ================= -->
+                            
+                            <!-- Bride's Long Flowing Veil (Right side, draping down behind shoulder) -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 205,45 C 216,65 229,112 247,196" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 204,76 C 215,112 225,152 238,194" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 218,187 C 231,191 241,191 246,193 C 245,196 240,198 236,200" />
+                            <!-- Inner veil fold behind groom/bride -->
+                            <path class="ink-stroke" stroke-width="1.8" d="M 164,65 L 157,104" />
+
+                            <!-- Groom's Suit Jacket, Vest & Shirt (Left side) -->
+                            <!-- Outer left shoulder & bent right arm -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 111,83 L 86,87 C 79,89 72,102 64,126 C 58,144 56,158 61,164 C 66,168 78,159 86,143 L 98,116" />
+                            <!-- Inner arm crease & cuff -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 79,98 L 78,125" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 78,118 C 80,126 84,132 89,134" />
+                            <!-- Sleeve cuff buttons -->
+                            <circle class="ink-stroke" stroke-width="1.5" cx="76" cy="144" r="1.4" />
+                            <circle class="ink-stroke" stroke-width="1.5" cx="73" cy="147" r="1.4" />
+
+                            <!-- Groom's Lower Jacket & Pocket -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 85,145 L 70,198" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 76,188 L 73,198" />
+                            <!-- Slanted Flap Pocket -->
+                            <path class="ink-stroke" stroke-width="1.9" d="M 74,179 L 94,174 L 91,184 L 69,189" />
+
+                            <!-- Groom's Shirt Collar & Cravat/Tie (Inside & below frame) -->
+                            <path class="ink-stroke" stroke-width="2" d="M 125,75 L 118,88 L 127,95 L 136,88" />
+                            <path class="ink-stroke" stroke-width="2" d="M 142,88 L 147,96 L 135,98" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 131,91 L 139,92 L 137,99 L 128,97 Z" />
+                            <!-- Tie & Vest V-neck below frame -->
+                            <path class="ink-stroke" stroke-width="2" d="M 122,110 L 125,138 L 135,114" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 128,112 L 125,134" />
+
+                            <!-- Groom's Left & Right Lapels -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 113,108 L 119,149 L 104,198" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 120,148 L 125,198" />
+                            <!-- Vest Opening & 3 Vest Buttons -->
+                            <path class="ink-stroke" stroke-width="2" d="M 139,115 L 121,158" />
+                            <circle class="ink-stroke" stroke-width="1.7" cx="123" cy="148" r="1.6" />
+                            <circle class="ink-stroke" stroke-width="1.7" cx="118" cy="164" r="1.8" />
+                            <circle class="ink-stroke" stroke-width="1.7" cx="122" cy="165" r="1.6" />
+
+                            <!-- Boutonniere (Corsage Flower) & Pocket Square on Groom's Left Chest -->
+                            <path class="ink-stroke" stroke-width="1.8" d="M 139,119 C 136,116 141,113 143,116 C 146,113 149,117 146,120 C 149,123 144,126 141,123 C 138,125 135,121 139,119 Z" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 135,125 L 146,126" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 142,124 L 140,136" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 144,125 L 146,134" />
+                            <!-- Pocket Square -->
+                            <path class="ink-stroke" stroke-width="1.8" d="M 146,133 C 149,127 154,128 156,134 L 145,134" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 144,138 L 156,138" />
+
+                            <!-- Groom's Left Jacket Edge & Arm Divider -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 149,117 L 131,173" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 159,121 L 144,193" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 160,127 L 158,196" />
+                            <path class="ink-stroke" stroke-width="1.7" d="M 152,162 L 156,174" />
+
+                            <!-- Bride's Strapless Dress & Left Arm -->
+                            <!-- Strapless sweetheart/straight bodice -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 166,137 C 179,134 194,134 205,136" />
+                            <path class="ink-stroke" stroke-width="2.2" d="M 166,137 L 168,197" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 172,175 L 173,197" />
+                            <path class="ink-stroke" stroke-width="2" d="M 204,173 L 196,197" />
+
+                            <!-- Bride's Right Shoulder & Raised Forearm holding the frame -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 211,105 C 219,108 225,113 227,118" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 202,126 C 206,154 210,174 216,176 C 222,177 225,155 221,126" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 214,125 L 212,135" />
+
+                            <!-- ================= GROOM & BRIDE HEADS (INSIDE FRAME) ================= -->
+
+                            <!-- Groom's Head (Leaning slightly right towards bride) -->
+                            <!-- Hair Outline & Side Part -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 131,61 C 127,48 134,34 148,32 C 161,31 171,38 171,50 C 163,52 153,51 146,48 C 148,46 150,45 152,44" />
+                            <!-- Groom's Left Ear -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 135,55 C 131,52 128,58 131,63 C 132,65 134,65 135,64" />
+                            <!-- Groom's Jawline & Chin -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 132,64 C 133,77 141,85 151,83 C 159,81 165,71 168,52" />
+                            <!-- Groom's Neck -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 129,67 L 125,77" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 146,83 L 143,89" />
+                            <!-- Groom's Eyes, Nose & Smile -->
+                            <circle class="ink-fill" cx="149" cy="60" r="1.7" />
+                            <circle class="ink-fill" cx="159" cy="63" r="1.7" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 153,65 L 151,69" />
+                            <path class="ink-stroke" stroke-width="2" d="M 145,72 C 147,75 151,75 153,73" />
+
+                            <!-- Bride's Head (Leaning slightly left towards groom) -->
+                            <!-- Crown Hair & Tiara Headband -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 171,50 C 175,40 187,38 197,44 C 204,49 207,58 205,68" />
+                            <!-- Beaded Tiara / Hairband -->
+                            <path class="ink-stroke" stroke-width="1.9" d="M 177,43 C 186,42 195,46 200,54" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 175,46 C 185,45 194,49 199,57" />
+                            <circle class="ink-fill" cx="181" cy="44" r="1" />
+                            <circle class="ink-fill" cx="186" cy="45" r="1" />
+                            <circle class="ink-fill" cx="191" cy="47" r="1" />
+                            <circle class="ink-fill" cx="195" cy="50" r="1" />
+                            <!-- Swept Front Bangs -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 168,65 C 170,55 175,49 181,48 C 186,56 194,63 203,68" />
+                            <!-- Bride's Face & Chin -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 169,64 C 168,78 174,88 184,88 C 193,88 199,81 201,71" />
+                            <!-- Bride's Earrings (Left & Right drop pearls) -->
+                            <circle class="ink-stroke" stroke-width="1.6" cx="170" cy="82" r="1.6" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 201,68 C 204,68 204,73 201,75" />
+                            <path class="ink-stroke" stroke-width="1.7" d="M 200,76 L 199,83" />
+                            <!-- Bride's Neck -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 177,88 L 174,99" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 195,85 L 195,103" />
+                            <!-- Bride's Eyes, Nose & Smile -->
+                            <circle class="ink-fill" cx="176" cy="68" r="1.7" />
+                            <circle class="ink-fill" cx="187" cy="69" r="1.7" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 181,71 L 180,74" />
+                            <path class="ink-stroke" stroke-width="2" d="M 178,79 C 180,81 183,81 185,79" />
+
+                            <!-- ================= TILTED PICTURE FRAME & HANDS (FOREGROUND) ================= -->
+
+                            <!-- White paper mask for Picture Frame border so background lines don't bleed through -->
+                            <path fill="#fdfcf9" d="M 119,19 L 214,39 L 200,115 L 104,95 Z M 125,27 L 113,89 L 194,106 L 206,44 Z" />
+
+                            <!-- Outer Picture Frame Rectangle -->
+                            <path class="ink-stroke" stroke-width="2.3" d="M 119,19 L 214,39 L 200,115 L 104,95 Z" />
+                            <!-- Inner Picture Frame Rectangle -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 124,26 L 207,44 L 194,107 L 112,89 Z" />
+
+                            <!-- Groom's Right Hand (Holding bottom-left corner of frame) -->
+                            <path fill="#fdfcf9" d="M 96,102 C 99,91 105,86 112,88 C 117,90 118,98 113,105 L 106,113 Z" />
+                            <path class="ink-stroke" stroke-width="2" d="M 97,102 C 100,91 105,86 112,88 C 115,89 116,92 114,94" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 104,92 C 109,91 114,93 115,96 C 115,98 112,99 109,98" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 103,96 C 108,96 113,98 113,101 C 113,103 109,103 106,102" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 102,101 C 106,101 110,103 110,106 C 109,108 105,108 102,106" />
+                            <path class="ink-stroke" stroke-width="2" d="M 97,102 L 90,117" />
+                            <path class="ink-stroke" stroke-width="2" d="M 106,107 L 98,118" />
+
+                            <!-- Bride's Left Hand (Holding bottom-right edge of frame) -->
+                            <path fill="#fdfcf9" d="M 197,102 C 199,93 205,89 210,94 C 213,99 213,115 211,124 L 201,124 Z" />
+                            <path class="ink-stroke" stroke-width="2" d="M 205,91 C 209,92 212,98 212,107 L 212,124" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 205,92 C 201,94 198,98 199,101 C 201,102 204,99 206,97" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 206,97 C 201,100 198,104 200,106 C 202,107 205,104 207,102" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 207,102 C 203,105 200,109 202,111 C 204,112 207,109 208,107" />
+                            <path class="ink-stroke" stroke-width="2" d="M 203,111 L 201,124" />
+                            <!-- Bride's wrist cuff line -->
+                            <path class="ink-stroke" stroke-width="2" d="M 200,124 C 204,127 210,127 213,124" />
+                        </svg>
+                    </div>
+
+                    <!-- Bottom Names, Date & Inverted Garland -->
+                    <div class="w-full flex flex-col items-center pb-1">
+                        <p id="displayNames" class="font-klee text-lg sm:text-xl tracking-[0.18em] font-semibold text-[#1e1d1b] mb-1.5">
+                            bintang and irren
+                        </p>
+                        <p id="displayDateFront" class="font-klee text-sm sm:text-base tracking-[0.22em] font-semibold text-[#1e1d1b] mb-3">
+                            2027 . 05 . 15
+                        </p>
+
+                        <!-- Bottom Inverted Garland Doodle SVG -->
+                        <svg class="w-4/5 max-w-[260px] h-auto overflow-visible" viewBox="0 0 260 48">
+                            <path class="ink-stroke" stroke-width="2.2" d="M 12,6 C 42,8 66,22 75,30 C 78,33 74,38 71,35 C 68,32 72,25 82,23 C 98,20 118,24 128,32 C 125,38 130,40 130,36 C 130,40 135,38 132,32 C 142,24 162,20 178,23 C 188,25 192,32 189,35 C 186,38 182,33 185,30 C 194,22 218,8 248,6" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="42" cy="21" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="103" cy="31" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="157" cy="31" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="218" cy="21" r="2.2" />
+                            <!-- Tiny spark lines below heart -->
+                            <path class="ink-stroke" stroke-width="1.8" d="M124 40 L122 45 M130 41 L130 46 M136 40 L138 45" />
+                        </svg>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     HALAMAN 2: SISI BELAKANG (INFO MINIMALIS)
+                     ========================================== -->
+                <section class="card-face card-back select-none" aria-label="Halaman Belakang Informasi Undangan">
+                    
+                    <!-- Top Minimalist Botanical/Heart Doodle -->
+                    <div class="w-full flex flex-col items-center pt-1">
+                        <svg class="w-28 h-8 overflow-visible" viewBox="0 0 120 30">
+                            <path class="ink-stroke" stroke-width="1.8" d="M 10,18 Q 35,18 52,12" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 110,18 Q 85,18 68,12" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 60,17 C 55,10 50,14 60,22 C 70,14 65,10 60,17 Z" />
+                            <circle class="ink-fill" cx="32" cy="14" r="1.5" />
+                            <circle class="ink-fill" cx="88" cy="14" r="1.5" />
+                        </svg>
+                        <span class="font-hand text-2xl text-[#6e6a63] mt-0.5">Save the Date</span>
+                    </div>
+
+                    <!-- Center Minimalist Wedding Details (Not overcrowded) -->
+                    <div class="w-full flex flex-col items-center text-center px-2 space-y-5 my-auto">
+                        
+                        <!-- Short Intimate Note -->
+                        <p id="displayQuote" class="font-klee text-xs sm:text-[13px] leading-relaxed text-[#4a4742] max-w-[260px]">
+                            Dengan penuh sukacita, kami mengundang Anda untuk berbagi kebahagiaan di hari pernikahan kami.
+                        </p>
+
+                        <!-- Hand-drawn divider line -->
+                        <svg class="w-20 h-2" viewBox="0 0 80 6">
+                            <path class="ink-stroke" stroke-width="1.5" stroke-dasharray="3 4" d="M 2,3 Q 40,1 78,3" />
+                        </svg>
+
+                        <!-- Date & Time Block -->
+                        <div class="space-y-1">
+                            <p class="font-sans-clean text-[10px] uppercase tracking-[0.2em] text-[#6e6a63]">Hari & Tanggal</p>
+                            <h2 id="displayFullDate" class="font-klee text-base sm:text-lg font-semibold text-[#1e1d1b] tracking-wide">
+                                Sabtu, 15 Mei 2027
+                            </h2>
+                            <p id="displayTime" class="font-klee text-xs sm:text-[13px] text-[#4a4742]">
+                                Akad 09.00 WIB &bull; Resepsi 11.00 – 14.00 WIB
+                            </p>
+                        </div>
+
+                        <!-- Location Block -->
+                        <div class="space-y-1">
+                            <p class="font-sans-clean text-[10px] uppercase tracking-[0.2em] text-[#6e6a63]">Tempat Acara</p>
+                            <h3 id="displayVenueName" class="font-klee text-base font-semibold text-[#1e1d1b]">
+                                Glasshouse Kalaras
+                            </h3>
+                            <p id="displayVenueAddress" class="font-klee text-xs text-[#6e6a63] max-w-[230px] leading-snug">
+                                Jl. Ir. H. Juanda No. 112, Dago, Kota Bandung
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- Bottom Interactive Action Buttons (Stop Propagation so they don't flip card) -->
+                    <div class="w-full flex flex-col items-center gap-2.5 pt-2">
+                        <div class="w-full grid grid-cols-2 gap-2.5">
+                            <button type="button" id="btnMaps" class="doodle-btn py-2 px-3 text-xs font-klee font-semibold flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>Peta Lokasi</span>
+                            </button>
+
+                            <button type="button" id="btnRsvp" class="doodle-btn-filled py-2 px-3 text-xs font-klee font-semibold flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Konfirmasi Hadir</span>
+                            </button>
+                        </div>
+
+                        <span class="font-sans-clean text-[10px] text-[#8c867e] tracking-wider pt-1">
+                            Ketuk area kosong kartu untuk balik ke depan &#8634;
+                        </span>
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Bottom Tap Prompt -->
+        <button id="flipTriggerBtn" class="mt-6 hint-badge flex items-center gap-2 px-4 py-2 rounded-full bg-stone-800/90 text-stone-100 shadow-md font-sans-clean text-xs tracking-wide hover:bg-stone-900 transition active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span id="flipHintText">Ketuk kartu untuk membalik halaman</span>
+        </button>
+    </main>
+
+    <!-- ==========================================
+         MODAL 1: KONFIRMASI KEHADIRAN (RSVP)
+         ========================================== -->
+    <div id="rsvpModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+        <div class="bg-[#fdfcf9] border border-stone-300 rounded-lg max-w-sm w-full p-6 shadow-xl relative animate-fadeIn">
+            <button type="button" id="closeRsvpBtn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="font-hand text-3xl text-[#1e1d1b] mb-1">RSVP Kehadiran</h3>
+            <p class="font-klee text-xs text-stone-500 mb-4">Bantu kami menyiapkan tempat terbaik untuk Anda.</p>
+
+            <form id="rsvpForm" class="space-y-3.5 font-klee text-sm">
+                <div>
+                    <label class="block text-xs text-stone-600 mb-1">Nama Lengkap</label>
+                    <input type="text" id="guestName" required placeholder="Contoh: Dimas & Partner" class="w-full px-3 py-2 bg-white border border-stone-300 rounded focus:outline-none focus:border-stone-800 text-xs">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-stone-600 mb-1">Konfirmasi Kehadiran</label>
+                    <select id="guestStatus" class="w-full px-3 py-2 bg-white border border-stone-300 rounded focus:outline-none focus:border-stone-800 text-xs">
+                        <option value="Hadir">Ya, Saya Akan Hadir</option>
+                        <option value="Ragu">Masih Ragu / Tentatif</option>
+                        <option value="Tidak Hadir">Maaf, Belum Bisa Hadir</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-stone-600 mb-1">Ucapan Singkat (Opsional)</label>
+                    <textarea id="guestWish" rows="2" placeholder="Selamat menempuh hidup baru..." class="w-full px-3 py-2 bg-white border border-stone-300 rounded focus:outline-none focus:border-stone-800 text-xs"></textarea>
+                </div>
+
+                <button type="submit" class="w-full doodle-btn-filled py-2.5 text-xs font-semibold tracking-wide mt-2">
+                    Kirim Konfirmasi
+                </button>
+            </form>
+
+            <!-- Success Message inside Modal -->
+            <div id="rsvpSuccess" class="hidden text-center py-6 space-y-2">
+                <div class="w-10 h-10 rounded-full bg-stone-100 border border-stone-800 mx-auto flex items-center justify-center">
+                    <svg class="w-5 h-5 text-stone-800" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h4 class="font-klee font-semibold text-base">Terima Kasih!</h4>
+                <p class="font-klee text-xs text-stone-600" id="rsvpSuccessMsg">Konfirmasi Anda telah tersimpan di prototipe ini.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2: PREVIEW PETA LOKASI
+         ========================================== -->
+    <div id="mapsModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+        <div class="bg-[#fdfcf9] border border-stone-300 rounded-lg max-w-sm w-full p-6 shadow-xl relative">
+            <button type="button" id="closeMapsBtn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="font-hand text-3xl text-[#1e1d1b] mb-1">Petunjuk Lokasi</h3>
+            <p id="modalVenueTitle" class="font-klee text-xs font-semibold text-stone-700">Glasshouse Kalaras</p>
+            <p id="modalVenueSub" class="font-klee text-xs text-stone-500 mb-4">Jl. Ir. H. Juanda No. 112, Dago, Kota Bandung</p>
+
+            <!-- Hand-drawn Minimalist Map Sketch Preview -->
+            <div class="w-full h-36 bg-[#f4f1ea] border border-stone-300 rounded flex flex-col items-center justify-center p-4 mb-4 relative overflow-hidden">
+                <svg class="w-full h-full opacity-35 absolute inset-0" viewBox="0 0 200 100">
+                    <path stroke="#1e1d1b" stroke-width="2" fill="none" d="M 0,30 Q 60,35 100,50 T 200,70" />
+                    <path stroke="#1e1d1b" stroke-width="1.5" fill="none" d="M 40,0 L 70,100 M 140,0 L 120,100" />
+                </svg>
+                <div class="z-10 flex flex-col items-center">
+                    <div class="w-8 h-8 rounded-full bg-stone-900 text-white flex items-center justify-center shadow-md mb-1 animate-bounce">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                    </div>
+                    <span class="font-sans-clean text-[11px] font-medium bg-white/90 px-2.5 py-0.5 rounded shadow-xs">Titik Lokasi Acara</span>
+                </div>
+            </div>
+
+            <a id="googleMapsLink" href="https://maps.google.com/?q=Dago+Bandung" target="_blank" rel="noopener noreferrer" class="w-full doodle-btn-filled py-2.5 text-xs font-klee font-semibold flex items-center justify-center gap-2">
+                <span>Buka di Google Maps</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 3: EDIT TEKS PROTOTYPE (CUSTOMIZER)
+         ========================================== -->
+    <div id="customizeModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+        <div class="bg-[#fdfcf9] border border-stone-300 rounded-lg max-w-sm w-full p-6 shadow-xl relative max-h-[90vh] overflow-y-auto">
+            <button type="button" id="closeCustomizeBtn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="font-sans-clean font-semibold text-base text-stone-800 mb-1">Ubah Isi Prototipe</h3>
+            <p class="font-sans-clean text-xs text-stone-500 mb-4">Coba ganti nama, tanggal, atau lokasi untuk melihat hasilnya secara langsung.</p>
+
+            <form id="customizeForm" class="space-y-3 font-sans-clean text-xs">
+                <div>
+                    <label class="block text-stone-600 mb-1 font-medium">Ganti Gambar Avatar (Opsional)</label>
+                    <input type="file" id="inputAvatarFile" accept="image/*" class="w-full text-[11px] text-stone-600 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-stone-200 file:text-stone-800 hover:file:bg-stone-300 cursor-pointer bg-white border border-stone-300 rounded p-1">
+                    <p class="text-[10px] text-stone-400 mt-0.5">Unggah file gambar (JPG/PNG) jika ingin memakai gambar asli secara langsung.</p>
+                </div>
+
+                <div>
+                    <label class="block text-stone-600 mb-1 font-medium">Judul Depan</label>
+                    <select id="inputHeader" class="w-full px-3 py-2 bg-white border border-stone-300 rounded">
+                        <option value="Just&#10;married">Just married (Sesuai Referensi)</option>
+                        <option value="The Wedding&#10;of">The Wedding of</option>
+                        <option value="We Are&#10;Getting Married">We Are Getting Married</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-stone-600 mb-1 font-medium">Nama Pasangan (Halaman Depan)</label>
+                    <input type="text" id="inputNames" value="bintang and irren" class="w-full px-3 py-2 bg-white border border-stone-300 rounded">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-stone-600 mb-1 font-medium">Tanggal Angka (Depan)</label>
+                        <input type="text" id="inputDateFront" value="2027 . 05 . 15" class="w-full px-3 py-2 bg-white border border-stone-300 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-stone-600 mb-1 font-medium">Hari & Tanggal (Belakang)</label>
+                        <input type="text" id="inputFullDate" value="Sabtu, 15 Mei 2027" class="w-full px-3 py-2 bg-white border border-stone-300 rounded">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-stone-600 mb-1 font-medium">Waktu Acara</label>
+                    <input type="text" id="inputTime" value="Akad 09.00 WIB • Resepsi 11.00 – 14.00 WIB" class="w-full px-3 py-2 bg-white border border-stone-300 rounded">
+                </div>
+
+                <div>
+                    <label class="block text-stone-600 mb-1 font-medium">Nama Gedung / Venue</label>
+                    <input type="text" id="inputVenueName" value="Glasshouse Kalaras" class="w-full px-3 py-2 bg-white border border-stone-300 rounded">
+                </div>
+
+                <div>
+                    <label class="block text-stone-600 mb-1 font-medium">Alamat Singkat</label>
+                    <input type="text" id="inputVenueAddress" value="Jl. Ir. H. Juanda No. 112, Dago, Kota Bandung" class="w-full px-3 py-2 bg-white border border-stone-300 rounded">
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="submit" class="w-full bg-stone-900 text-white py-2.5 rounded font-medium hover:bg-stone-800 transition">
+                        Terapkan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const postcard = document.getElementById('postcard');
+        const cardScene = document.getElementById('cardScene');
+        const flipTriggerBtn = document.getElementById('flipTriggerBtn');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const flipHintText = document.getElementById('flipHintText');
+
+        // Modals & Action Buttons
+        const btnMaps = document.getElementById('btnMaps');
+        const btnRsvp = document.getElementById('btnRsvp');
+        const rsvpModal = document.getElementById('rsvpModal');
+        const mapsModal = document.getElementById('mapsModal');
+        const customizeModal = document.getElementById('customizeModal');
+
+        const closeRsvpBtn = document.getElementById('closeRsvpBtn');
+        const closeMapsBtn = document.getElementById('closeMapsBtn');
+        const openCustomizeBtn = document.getElementById('openCustomizeBtn');
+        const closeCustomizeBtn = document.getElementById('closeCustomizeBtn');
+
+        let isFlipped = false;
+
+        // Function to toggle the 3D Card Flip
+        function toggleFlip() {
+            isFlipped = !isFlipped;
+            postcard.classList.toggle('is-flipped', isFlipped);
+
+            if (isFlipped) {
+                pageIndicator.textContent = 'Sisi Belakang - Info (2/2)';
+                flipHintText.textContent = 'Ketuk untuk kembali ke depan';
+            } else {
+                pageIndicator.textContent = 'Sisi Depan (1/2)';
+                flipHintText.textContent = 'Ketuk kartu untuk membalik halaman';
+            }
+        }
+
+        // Click on the card scene flips the card
+        cardScene.addEventListener('click', () => {
+            toggleFlip();
+        });
+
+        // Click on the bottom helper pill also flips the card
+        flipTriggerBtn.addEventListener('click', () => {
+            toggleFlip();
+        });
+
+        // Prevent card flip when clicking interactive buttons on the back page
+        btnMaps.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mapsModal.classList.remove('hidden');
+            mapsModal.classList.add('flex');
+        });
+
+        btnRsvp.addEventListener('click', (e) => {
+            e.stopPropagation();
+            rsvpModal.classList.remove('hidden');
+            rsvpModal.classList.add('flex');
+        });
+
+        // Close Modals logic
+        closeRsvpBtn.addEventListener('click', () => {
+            rsvpModal.classList.add('hidden');
+            rsvpModal.classList.remove('flex');
+        });
+
+        closeMapsBtn.addEventListener('click', () => {
+            mapsModal.classList.add('hidden');
+            mapsModal.classList.remove('flex');
+        });
+
+        openCustomizeBtn.addEventListener('click', () => {
+            customizeModal.classList.remove('hidden');
+            customizeModal.classList.add('flex');
+        });
+
+        closeCustomizeBtn.addEventListener('click', () => {
+            customizeModal.classList.add('hidden');
+            customizeModal.classList.remove('flex');
+        });
+
+        // Close modals on backdrop click
+        [rsvpModal, mapsModal, customizeModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        });
+
+        // Handle RSVP Form Submission
+        const rsvpForm = document.getElementById('rsvpForm');
+        const rsvpSuccess = document.getElementById('rsvpSuccess');
+        const rsvpSuccessMsg = document.getElementById('rsvpSuccessMsg');
+
+        rsvpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('guestName').value;
+            const status = document.getElementById('guestStatus').value;
+            
+            rsvpForm.classList.add('hidden');
+            rsvpSuccess.classList.remove('hidden');
+            rsvpSuccessMsg.textContent = `Halo ${name}, status "${status}" sudah tercatat.`;
+
+            setTimeout(() => {
+                rsvpModal.classList.add('hidden');
+                rsvpModal.classList.remove('flex');
+                setTimeout(() => {
+                    rsvpForm.reset();
+                    rsvpForm.classList.remove('hidden');
+                    rsvpSuccess.classList.add('hidden');
+                }, 400);
+            }, 1800);
+        });
+
+        // Handle Live Prototype Text Customization
+        const customizeForm = document.getElementById('customizeForm');
+        const inputAvatarFile = document.getElementById('inputAvatarFile');
+        const customAvatarImg = document.getElementById('customAvatarImg');
+        const defaultAvatarSvg = document.getElementById('defaultAvatarSvg');
+
+        // Handle custom avatar image upload with seamless paper blend
+        inputAvatarFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    customAvatarImg.src = event.target.result;
+                    customAvatarImg.classList.remove('hidden');
+                    defaultAvatarSvg.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        customizeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            document.getElementById('displayHeader').textContent = document.getElementById('inputHeader').value;
+            document.getElementById('displayNames').textContent = document.getElementById('inputNames').value;
+            document.getElementById('displayDateFront').textContent = document.getElementById('inputDateFront').value;
+            document.getElementById('displayFullDate').textContent = document.getElementById('inputFullDate').value;
+            document.getElementById('displayTime').textContent = document.getElementById('inputTime').value;
+            
+            const venueName = document.getElementById('inputVenueName').value;
+            const venueAddr = document.getElementById('inputVenueAddress').value;
+            
+            document.getElementById('displayVenueName').textContent = venueName;
+            document.getElementById('displayVenueAddress').textContent = venueAddr;
+            document.getElementById('modalVenueTitle').textContent = venueName;
+            document.getElementById('modalVenueSub').textContent = venueAddr;
+            document.getElementById('googleMapsLink').href = `https://maps.google.com/?q=${encodeURIComponent(venueName + ' ' + venueAddr)}`;
+
+            customizeModal.classList.add('hidden');
+            customizeModal.classList.remove('flex');
+        });
+    </script>
+</body>
+</html>

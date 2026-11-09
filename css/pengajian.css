@@ -1,0 +1,28 @@
+/* ==========================================================================
+   PENGAJIAN / WALIMATUL URSY SPECIFIC STYLES
+   ========================================================================== */
+
+:root {
+    --bg-room: #ebe7df;
+    --card-paper: #fdfcf8;
+    --ink-black: #22201d;
+    --ink-muted: #6e695f;
+    --accent-sage: #4a5548;
+}
+
+body {
+    background-color: var(--bg-room);
+    background-image: 
+        radial-gradient(at 15% 15%, rgba(255, 255, 255, 0.65) 0px, transparent 50%),
+        radial-gradient(at 85% 85%, rgba(205, 198, 182, 0.4) 0px, transparent 50%);
+    font-family: 'Klee One', cursive, serif;
+    color: var(--ink-black);
+}
+
+.scene {
+    aspect-ratio: 3 / 4.35;
+}
+
+.pengajian-heading {
+    letter-spacing: 0.16em;
+}

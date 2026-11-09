@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wedding of Bintang & Irren</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for organic handwritten & minimalist Japanese postcard look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Klee+One:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/pernikahan.css">
+</head>
+<body class="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 relative">
+
+    <!-- Top Floating Bar: Page Indicator -->
+    <header class="fixed top-4 inset-x-4 max-w-md mx-auto flex items-center justify-center z-20 pointer-events-none">
+        <div class="bg-white/85 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-xs border border-stone-200/80 flex items-center gap-2 pointer-events-auto">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span class="font-sans-clean text-xs font-medium text-stone-700" id="pageIndicator">Sisi Depan (1/2)</span>
+        </div>
+    </header>
+
+    <!-- Main 3D Card Scene -->
+    <main class="w-full flex flex-col items-center justify-center my-auto py-8">
+        <div class="scene" id="cardScene" title="Klik untuk membalik undangan">
+            <div class="postcard" id="postcard">
+
+                <!-- ==========================================
+                     HALAMAN 1: SISI DEPAN (SESUAI GAMBAR)
+                     ========================================== -->
+                <section class="card-face card-front select-none" aria-label="Halaman Depan Undangan Pernikahan">
+                    
+                    <!-- Top Garland Doodle SVG -->
+                    <div class="w-full flex flex-col items-center pt-1">
+                        <svg class="w-4/5 max-w-[260px] h-auto overflow-visible" viewBox="0 0 260 48">
+                            <!-- Tiny spark lines above heart -->
+                            <path class="ink-stroke" stroke-width="1.8" d="M124 8 L122 3 M130 7 L130 2 M136 8 L138 3" />
+                            <!-- Center tiny heart loop & garland waves -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 12,42 C 42,40 66,26 75,18 C 78,15 74,10 71,13 C 68,16 72,23 82,25 C 98,28 118,24 128,16 C 125,10 130,8 130,12 C 130,8 135,10 132,16 C 142,24 162,28 178,25 C 188,23 192,16 189,13 C 186,10 182,15 185,18 C 194,26 218,40 248,42" />
+                            <!-- Decorative tiny hollow circles -->
+                            <circle class="ink-stroke" stroke-width="1.8" cx="42" cy="27" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="103" cy="17" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="157" cy="17" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="218" cy="27" r="2.2" />
+                        </svg>
+
+                        <!-- Main Greeting Header: The Wedding of -->
+                        <div class="mt-2 text-center leading-none">
+                            <h1 id="displayHeader" class="font-hand text-4xl sm:text-[44px] tracking-wide text-[#1e1d1b] whitespace-pre-line leading-[1.05]">The Wedding
+of</h1>
+                        </div>
+                    </div>
+
+                    <!-- Center Couple Doodle Illustration -->
+                    <div class="w-full flex items-center justify-center my-0.5 relative">
+                        <!-- Hand-drawn SVG Illustration: Couple with Picture Frame -->
+                        <svg id="defaultAvatarSvg" class="w-full max-w-[285px] h-auto overflow-visible" viewBox="0 0 310 215">
+                            <!-- Bride's Long Flowing Veil -->
+                            <path class="ink-stroke" stroke-width="2.1" d="M 205,45 C 216,65 229,112 247,196" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 204,76 C 215,112 225,152 238,194" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 218,187 C 231,191 241,191 246,193 C 245,196 240,198 236,200" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 164,65 L 157,104" />
+
+                            <!-- Groom's Suit Jacket, Vest & Shirt -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 111,83 L 86,87 C 79,89 72,102 64,126 C 58,144 56,158 61,164 C 66,168 78,159 86,143 L 98,116" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 79,98 L 78,125" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 78,118 C 80,126 84,132 89,134" />
+                            <circle class="ink-stroke" stroke-width="1.5" cx="76" cy="144" r="1.4" />
+                            <circle class="ink-stroke" stroke-width="1.5" cx="73" cy="147" r="1.4" />
+
+                            <path class="ink-stroke" stroke-width="2.2" d="M 85,145 L 70,198" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 76,188 L 73,198" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 74,179 L 94,174 L 91,184 L 69,189" />
+
+                            <path class="ink-stroke" stroke-width="2" d="M 125,75 L 118,88 L 127,95 L 136,88" />
+                            <path class="ink-stroke" stroke-width="2" d="M 142,88 L 147,96 L 135,98" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 131,91 L 139,92 L 137,99 L 128,97 Z" />
+                            <path class="ink-stroke" stroke-width="2" d="M 122,110 L 125,138 L 135,114" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 128,112 L 125,134" />
+
+                            <path class="ink-stroke" stroke-width="2.1" d="M 113,108 L 119,149 L 104,198" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 120,148 L 125,198" />
+                            <path class="ink-stroke" stroke-width="2" d="M 139,115 L 121,158" />
+                            <circle class="ink-stroke" stroke-width="1.7" cx="123" cy="148" r="1.6" />
+                            <circle class="ink-stroke" stroke-width="1.7" cx="118" cy="164" r="1.8" />
+                            <circle class="ink-stroke" stroke-width="1.7" cx="122" cy="165" r="1.6" />
+
+                            <path class="ink-stroke" stroke-width="1.8" d="M 139,119 C 136,116 141,113 143,116 C 146,113 149,117 146,120 C 149,123 144,126 141,123 C 138,125 135,121 139,119 Z" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 135,125 L 146,126" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 142,124 L 140,136" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 144,125 L 146,134" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 146,133 C 149,127 154,128 156,134 L 145,134" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 144,138 L 156,138" />
+
+                            <path class="ink-stroke" stroke-width="2.1" d="M 149,117 L 131,173" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 159,121 L 144,193" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 160,127 L 158,196" />
+                            <path class="ink-stroke" stroke-width="1.7" d="M 152,162 L 156,174" />
+
+                            <!-- Bride's Bodice -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 166,137 C 179,134 194,134 205,136" />
+                            <path class="ink-stroke" stroke-width="2.2" d="M 166,137 L 168,197" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 172,175 L 173,197" />
+                            <path class="ink-stroke" stroke-width="2" d="M 204,173 L 196,197" />
+
+                            <path class="ink-stroke" stroke-width="2.2" d="M 211,105 C 219,108 225,113 227,118" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 202,126 C 206,154 210,174 216,176 C 222,177 225,155 221,126" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 214,125 L 212,135" />
+
+                            <!-- Groom's Head -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 131,61 C 127,48 134,34 148,32 C 161,31 171,38 171,50 C 163,52 153,51 146,48 C 148,46 150,45 152,44" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 135,55 C 131,52 128,58 131,63 C 132,65 134,65 135,64" />
+                            <path class="ink-stroke" stroke-width="2.2" d="M 132,64 C 133,77 141,85 151,83 C 159,81 165,71 168,52" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 129,67 L 125,77" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 146,83 L 143,89" />
+                            <circle class="ink-fill" cx="149" cy="60" r="1.7" />
+                            <circle class="ink-fill" cx="159" cy="63" r="1.7" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 153,65 L 151,69" />
+                            <path class="ink-stroke" stroke-width="2" d="M 145,72 C 147,75 151,75 153,73" />
+
+                            <!-- Bride's Head -->
+                            <path class="ink-stroke" stroke-width="2.2" d="M 171,50 C 175,40 187,38 197,44 C 204,49 207,58 205,68" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 177,43 C 186,42 195,46 200,54" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 175,46 C 185,45 194,49 199,57" />
+                            <circle class="ink-fill" cx="181" cy="44" r="1" />
+                            <circle class="ink-fill" cx="186" cy="45" r="1" />
+                            <circle class="ink-fill" cx="191" cy="47" r="1" />
+                            <circle class="ink-fill" cx="195" cy="50" r="1" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 168,65 C 170,55 175,49 181,48 C 186,56 194,63 203,68" />
+                            <path class="ink-stroke" stroke-width="2.2" d="M 169,64 C 168,78 174,88 184,88 C 193,88 199,81 201,71" />
+                            <circle class="ink-stroke" stroke-width="1.6" cx="170" cy="82" r="1.6" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 201,68 C 204,68 204,73 201,75" />
+                            <path class="ink-stroke" stroke-width="1.7" d="M 200,76 L 199,83" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 177,88 L 174,99" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 195,85 L 195,103" />
+                            <circle class="ink-fill" cx="176" cy="68" r="1.7" />
+                            <circle class="ink-fill" cx="187" cy="69" r="1.7" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 181,71 L 180,74" />
+                            <path class="ink-stroke" stroke-width="2" d="M 178,79 C 180,81 183,81 185,79" />
+
+                            <!-- Picture Frame & Hands -->
+                            <path fill="#fdfcf9" d="M 119,19 L 214,39 L 200,115 L 104,95 Z M 125,27 L 113,89 L 194,106 L 206,44 Z" />
+                            <path class="ink-stroke" stroke-width="2.3" d="M 119,19 L 214,39 L 200,115 L 104,95 Z" />
+                            <path class="ink-stroke" stroke-width="2.1" d="M 124,26 L 207,44 L 194,107 L 112,89 Z" />
+
+                            <!-- Groom's Hand -->
+                            <path fill="#fdfcf9" d="M 96,102 C 99,91 105,86 112,88 C 117,90 118,98 113,105 L 106,113 Z" />
+                            <path class="ink-stroke" stroke-width="2" d="M 97,102 C 100,91 105,86 112,88 C 115,89 116,92 114,94" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 104,92 C 109,91 114,93 115,96 C 115,98 112,99 109,98" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 103,96 C 108,96 113,98 113,101 C 113,103 109,103 106,102" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 102,101 C 106,101 110,103 110,106 C 109,108 105,108 102,106" />
+                            <path class="ink-stroke" stroke-width="2" d="M 97,102 L 90,117" />
+                            <path class="ink-stroke" stroke-width="2" d="M 106,107 L 98,118" />
+
+                            <!-- Bride's Hand -->
+                            <path fill="#fdfcf9" d="M 197,102 C 199,93 205,89 210,94 C 213,99 213,115 211,124 L 201,124 Z" />
+                            <path class="ink-stroke" stroke-width="2" d="M 205,91 C 209,92 212,98 212,107 L 212,124" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 205,92 C 201,94 198,98 199,101 C 201,102 204,99 206,97" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 206,97 C 201,100 198,104 200,106 C 202,107 205,104 207,102" />
+                            <path class="ink-stroke" stroke-width="1.9" d="M 207,102 C 203,105 200,109 202,111 C 204,112 207,109 208,107" />
+                            <path class="ink-stroke" stroke-width="2" d="M 203,111 L 201,124" />
+                            <path class="ink-stroke" stroke-width="2" d="M 200,124 C 204,127 210,127 213,124" />
+                        </svg>
+                    </div>
+
+                    <!-- Bottom Names, Date & Inverted Garland -->
+                    <div class="w-full flex flex-col items-center pb-1">
+                        <p id="displayNames" class="font-klee text-lg sm:text-xl tracking-[0.18em] font-semibold text-[#1e1d1b] mb-1.5">
+                            bintang and irren
+                        </p>
+                        <p id="displayDateFront" class="font-klee text-sm sm:text-base tracking-[0.22em] font-semibold text-[#1e1d1b] mb-3">
+                            2026.12.26
+                        </p>
+
+                        <!-- Bottom Inverted Garland Doodle SVG -->
+                        <svg class="w-4/5 max-w-[260px] h-auto overflow-visible" viewBox="0 0 260 48">
+                            <path class="ink-stroke" stroke-width="2.2" d="M 12,6 C 42,8 66,22 75,30 C 78,33 74,38 71,35 C 68,32 72,25 82,23 C 98,20 118,24 128,32 C 125,38 130,40 130,36 C 130,40 135,38 132,32 C 142,24 162,20 178,23 C 188,25 192,32 189,35 C 186,38 182,33 185,30 C 194,22 218,8 248,6" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="42" cy="21" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="103" cy="31" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="157" cy="31" r="2.2" />
+                            <circle class="ink-stroke" stroke-width="1.8" cx="218" cy="21" r="2.2" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M124 40 L122 45 M130 41 L130 46 M136 40 L138 45" />
+                        </svg>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     HALAMAN 2: SISI BELAKANG (SESUAI GAMBAR)
+                     ========================================== -->
+                <section class="card-face card-back select-none" aria-label="Halaman Belakang Informasi Undangan">
+                    
+                    <!-- Top Minimalist Heart Doodle -->
+                    <div class="w-full flex flex-col items-center pt-0.5">
+                        <svg class="w-28 h-7 overflow-visible" viewBox="0 0 120 30">
+                            <path class="ink-stroke" stroke-width="1.8" d="M 10,18 Q 35,18 52,12" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 110,18 Q 85,18 68,12" />
+                            <path class="ink-stroke" stroke-width="1.8" d="M 60,17 C 55,10 50,14 60,22 C 70,14 65,10 60,17 Z" />
+                            <circle class="ink-fill" cx="32" cy="14" r="1.5" />
+                            <circle class="ink-fill" cx="88" cy="14" r="1.5" />
+                        </svg>
+                        <span class="font-hand text-2xl text-[#6e6a63] mt-0.5">Save the Date</span>
+                    </div>
+
+                    <!-- Center Wedding Details & Countdown -->
+                    <div class="w-full flex flex-col items-center text-center px-2 space-y-3.5 my-auto">
+                        
+                        <!-- Short Intimate Note -->
+                        <p id="displayQuote" class="font-klee text-xs sm:text-[12.5px] leading-relaxed text-[#4a4742] max-w-[260px]">
+                            Dengan penuh sukacita, kami mengundang Anda untuk berbagi kebahagiaan di hari pernikahan kami.
+                        </p>
+
+                        <!-- Countdown Timer Widget -->
+                        <div id="countdownContainer" class="countdown-box" title="Hitung mundur menuju hari bahagia">
+                            <div class="countdown-unit">
+                                <span class="countdown-num" id="cdDays">00</span>
+                                <span class="countdown-lbl">HARI</span>
+                            </div>
+                            <span class="countdown-sep">:</span>
+                            <div class="countdown-unit">
+                                <span class="countdown-num" id="cdHours">00</span>
+                                <span class="countdown-lbl">JAM</span>
+                            </div>
+                            <span class="countdown-sep">:</span>
+                            <div class="countdown-unit">
+                                <span class="countdown-num" id="cdMinutes">00</span>
+                                <span class="countdown-lbl">MENIT</span>
+                            </div>
+                            <span class="countdown-sep">:</span>
+                            <div class="countdown-unit">
+                                <span class="countdown-num" id="cdSeconds">00</span>
+                                <span class="countdown-lbl">DETIK</span>
+                            </div>
+                        </div>
+
+                        <!-- Date & Time Block -->
+                        <div class="space-y-0.5">
+                            <p class="font-sans-clean text-[10px] uppercase tracking-[0.2em] text-[#6e695f]">HARI & TANGGAL</p>
+                            <h2 id="displayFullDate" class="font-klee text-base sm:text-[17px] font-semibold text-[#1e1d1b] tracking-wide">
+                                Sabtu, 26 Des 2026
+                            </h2>
+                            <p id="displayTime" class="font-klee text-xs text-[#4a4742]">
+                                Resepsi 11.00 – 14.00 WIB
+                            </p>
+                        </div>
+
+                        <!-- Location Block -->
+                        <div class="space-y-0.5">
+                            <p class="font-sans-clean text-[10px] uppercase tracking-[0.2em] text-[#6e695f]">TEMPAT ACARA</p>
+                            <h3 id="displayVenueName" class="font-klee text-sm sm:text-base font-semibold text-[#1e1d1b]">
+                                Indies Style Hotel Bandung
+                            </h3>
+                            <p id="displayVenueAddress" class="font-klee text-xs text-[#6e695f] max-w-[250px] leading-snug">
+                                Jl. Kebon Jati No.32, Kb. Jeruk, Kec. Andir, Kota Bandung, Jawa Barat
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- Bottom Action Buttons: Maps, Calendar, RSVP -->
+                    <div class="w-full flex flex-col items-center gap-2 pt-1">
+                        <div class="w-full grid grid-cols-2 gap-2">
+                            <button type="button" id="btnMaps" class="doodle-btn py-1.5 px-2.5 text-xs font-klee font-semibold flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>Peta Lokasi</span>
+                            </button>
+
+                            <button type="button" id="btnRsvp" class="doodle-btn-filled py-1.5 px-2.5 text-xs font-klee font-semibold flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Konfirmasi Hadir</span>
+                            </button>
+                        </div>
+
+                        <!-- Add to Google Calendar Link -->
+                        <a id="btnCalendar" href="#" target="_blank" rel="noopener noreferrer" class="w-full doodle-btn-subtle py-1 px-2 text-[11px] font-klee font-medium flex items-center justify-center gap-1.5 text-stone-700 hover:text-stone-900" title="Tambahkan ke Google Calendar">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>Simpan ke Google Calendar</span>
+                        </a>
+
+                        <span class="font-sans-clean text-[10px] text-[#8c867e] tracking-wider pt-0.5">
+                            Ketuk area kosong kartu untuk balik ke depan &#8634;
+                        </span>
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Bottom Tap Prompt -->
+        <button id="flipTriggerBtn" class="mt-6 hint-badge flex items-center gap-2 px-4 py-2 rounded-full bg-stone-800/90 text-stone-100 shadow-md font-sans-clean text-xs tracking-wide hover:bg-stone-900 transition active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span id="flipHintText">Ketuk kartu untuk membalik halaman</span>
+        </button>
+    </main>
+
+    <!-- Floating Background Music (BGM) Button -->
+    <button type="button" id="bgmToggleBtn" class="bgm-btn" aria-label="Putar / Jeda Musik Latar" title="Putar Musik Latar">
+        <svg class="record-icon w-5 h-5 text-stone-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke-dasharray="2 3" />
+        </svg>
+    </button>
+
+    <!-- ==========================================
+         MODAL 1: KONFIRMASI KEHADIRAN (RSVP)
+         ========================================== -->
+    <div id="rsvpModal" class="modal-backdrop fixed inset-0 z-40 hidden items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+        <div class="bg-[#fdfcf9] border border-stone-300 rounded-lg max-w-sm w-full p-6 shadow-xl relative animate-fadeIn">
+            <button type="button" id="closeRsvpBtn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1" aria-label="Tutup RSVP">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="font-hand text-3xl text-[#1e1d1b] mb-1">RSVP Kehadiran</h3>
+            <p class="font-klee text-xs text-stone-500 mb-4">Bantu kami menyiapkan tempat terbaik untuk Anda.</p>
+
+            <form id="rsvpForm" class="space-y-3.5 font-klee text-sm">
+                <div>
+                    <label class="block text-xs text-stone-600 mb-1" for="guestName">Nama Lengkap</label>
+                    <input type="text" id="guestName" required placeholder="Contoh: Dimas & Partner" class="w-full px-3 py-2 bg-white border border-stone-300 rounded focus:outline-none focus:border-stone-800 text-xs">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-stone-600 mb-1" for="guestStatus">Konfirmasi Kehadiran</label>
+                    <select id="guestStatus" class="w-full px-3 py-2 bg-white border border-stone-300 rounded focus:outline-none focus:border-stone-800 text-xs">
+                        <option value="Hadir">Ya, Saya Akan Hadir</option>
+                        <option value="Ragu">Masih Ragu / Tentatif</option>
+                        <option value="Tidak Hadir">Maaf, Belum Bisa Hadir</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-stone-600 mb-1" for="guestWish">Ucapan Singkat (Opsional)</label>
+                    <textarea id="guestWish" rows="2" placeholder="Selamat menempuh hidup baru..." class="w-full px-3 py-2 bg-white border border-stone-300 rounded focus:outline-none focus:border-stone-800 text-xs"></textarea>
+                </div>
+
+                <button type="submit" class="w-full doodle-btn-filled py-2.5 text-xs font-semibold tracking-wide mt-2">
+                    Kirim Konfirmasi
+                </button>
+            </form>
+
+            <!-- Success Message inside Modal -->
+            <div id="rsvpSuccess" class="hidden text-center py-6 space-y-2">
+                <div class="w-10 h-10 rounded-full bg-stone-100 border border-stone-800 mx-auto flex items-center justify-center">
+                    <svg class="w-5 h-5 text-stone-800" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h4 class="font-klee font-semibold text-base">Terima Kasih!</h4>
+                <p class="font-klee text-xs text-stone-600" id="rsvpSuccessMsg">Konfirmasi Anda telah tersimpan.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2: PREVIEW PETA LOKASI
+         ========================================== -->
+    <div id="mapsModal" class="modal-backdrop fixed inset-0 z-40 hidden items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+        <div class="bg-[#fdfcf9] border border-stone-300 rounded-lg max-w-sm w-full p-6 shadow-xl relative animate-fadeIn">
+            <button type="button" id="closeMapsBtn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1" aria-label="Tutup Peta">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="font-hand text-3xl text-[#1e1d1b] mb-1">Petunjuk Lokasi</h3>
+            <p id="modalVenueTitle" class="font-klee text-xs font-semibold text-stone-700">Indies Style Hotel Bandung</p>
+            <p id="modalVenueSub" class="font-klee text-xs text-stone-500 mb-4">Jl. Kebon Jati No.32, Kb. Jeruk, Kec. Andir, Kota Bandung, Jawa Barat</p>
+
+            <!-- Hand-drawn Minimalist Map Sketch Preview -->
+            <div class="w-full h-36 bg-[#f4f1ea] border border-stone-300 rounded flex flex-col items-center justify-center p-4 mb-4 relative overflow-hidden">
+                <svg class="w-full h-full opacity-35 absolute inset-0" viewBox="0 0 200 100">
+                    <path stroke="#1e1d1b" stroke-width="2" fill="none" d="M 0,30 Q 60,35 100,50 T 200,70" />
+                    <path stroke="#1e1d1b" stroke-width="1.5" fill="none" d="M 40,0 L 70,100 M 140,0 L 120,100" />
+                </svg>
+                <div class="z-10 flex flex-col items-center">
+                    <div class="w-8 h-8 rounded-full bg-stone-900 text-white flex items-center justify-center shadow-md mb-1 animate-bounce">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                    </div>
+                    <span class="font-sans-clean text-[11px] font-medium bg-white/90 px-2.5 py-0.5 rounded shadow-xs">Titik Lokasi Acara</span>
+                </div>
+            </div>
+
+            <a id="googleMapsLink" href="https://maps.google.com/?q=Indies+Style+Hotel+Bandung+Jl+Kebon+Jati+No+32+Bandung" target="_blank" rel="noopener noreferrer" class="w-full doodle-btn-filled py-2.5 text-xs font-klee font-semibold flex items-center justify-center gap-2">
+                <span>Buka di Google Maps</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/common.js"></script>
+    <script src="js/pernikahan.js"></script>
+</body>
+</html>

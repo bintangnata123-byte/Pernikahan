@@ -1,0 +1,25 @@
+/* ==========================================================================
+   PERNIKAHAN SPECIFIC STYLES
+   ========================================================================== */
+
+:root {
+    --bg-room: #efece6;
+    --card-paper: #fdfcf9;
+    --ink-black: #1e1d1b;
+    --ink-muted: #6e6a63;
+    --accent-gold: #9f8352;
+}
+
+body {
+    background-color: var(--bg-room);
+    background-image: 
+        radial-gradient(at 20% 20%, rgba(255, 255, 255, 0.6) 0px, transparent 50%),
+        radial-gradient(at 80% 80%, rgba(215, 208, 195, 0.35) 0px, transparent 50%);
+    font-family: 'Klee One', cursive, serif;
+    color: var(--ink-black);
+}
+
+/* Specific wedding flourishes */
+.wedding-tag {
+    letter-spacing: 0.22em;
+}
